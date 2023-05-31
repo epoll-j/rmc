@@ -9,9 +9,6 @@ const SPEED = 4
 
 export const Player = () => {
   const actions = useKeyboard();
-  useEffect(() => {
-    console.log('actions', actions)
-  }, [actions])
 
   const { camera } = useThree()
   const [ref, api] = useSphere<Mesh>(() => {
@@ -27,6 +24,7 @@ export const Player = () => {
     api.position.subscribe(position => {
       pos.current = position
     })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const vel = useRef([0, 0, 0])
@@ -34,6 +32,7 @@ export const Player = () => {
     api.velocity.subscribe(velocity => {
       vel.current = velocity
     })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useFrame(() => {

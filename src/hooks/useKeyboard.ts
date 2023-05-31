@@ -49,8 +49,6 @@ export const useKeyboard = () => {
     })
 
     const handleKeyDown = (e: KeyboardEvent) => {
-        console.log('keyDown e.code', e.code)
-        // e.code -> actions
         const action = actionByKeyCode(e.code)
         setActions((prevState) => {
             return {
@@ -61,7 +59,6 @@ export const useKeyboard = () => {
     }
 
     const handleKeyUp = (e: KeyboardEvent) => {
-        console.log('keyUp e.code', e.code)
         const action = actionByKeyCode(e.code)
         setActions((prevState) => {
             return {
