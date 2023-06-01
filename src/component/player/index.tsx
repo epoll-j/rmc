@@ -1,74 +1,46 @@
-import { useSphere } from "@react-three/cannon";
-import { Mesh, Vector3 } from "three";
-import { useEffect, useRef } from "react";
-import { useFrame, useThree } from "@react-three/fiber";
-import { useKeyboard } from "../../hooks/useKeyboard";
+import * as THREE from "three"
+import * as RAPIER from "@dimforge/rapier3d-compat"
+import { useRef } from "react"
+import { useFrame } from "@react-three/fiber"
+import { useKeyboardControls } from "@react-three/drei"
+import { CapsuleCollider, RapierRigidBody, RigidBody, useRapier } from "@react-three/rapier"
 
-const JUMP_FORCE = 4
-const SPEED = 4
+const SPEED = 5
+const direction = new THREE.Vector3()
+const frontVector = new THREE.Vector3()
+const sideVector = new THREE.Vector3()
+const rotation = new THREE.Vector3()
 
-export const Player = () => {
-  const actions = useKeyboard();
-
-  const { camera } = useThree()
-  const [ref, api] = useSphere<Mesh>(() => {
-    return {
-      mass: 1,
-      type: 'Dynamic',
-      position: [0, 1, 0],
+export function Player({ lerp = THREE.MathUtils.lerp }) {
+  const axe = useRef()
+  const ref = useRef<RapierRigidBody>()
+  const rapier = useRapier()
+  const [, get] = useKeyboardControls()
+  useFrame((state) => {
+    const { forward, backward, left, right, jump } = get()
+    console.log(forward, backward, left, right, jump)
+    if (ref.current) {
+      const velocity = ref.current.linvel()
+      // update camera
+      state.camera.position.set(ref.current.translation().x, ref.current.translation().y, ref.current.translation().z)
+      // movement
+      frontVector.set(0, 0, backward - forward)
+      sideVector.set(left - right, 0, 0)
+      direction.subVectors(frontVector, sideVector).normalize().multiplyScalar(SPEED).applyEuler(state.camera.rotation)
+      ref.current.setLinvel({ x: direction.x, y: velocity.y, z: direction.z }, true)
+      // jumping
+      // const world = rapier.world.raw()
+      // const ray = world.castRay(new RAPIER.Ray(ref.current.translation(), { x: 0, y: -1, z: 0 }))
+      // const grounded = ray && ray.collider && Math.abs(ray.toi) <= 1.75
+      // if (jump && grounded) ref.current.setLinvel({ x: 0, y: 7.5, z: 0 })
     }
   })
-
-  const pos = useRef([0, 0, 0])
-  useEffect(() => {
-    api.position.subscribe(position => {
-      pos.current = position
-    })
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  const vel = useRef([0, 0, 0])
-  useEffect(() => {
-    api.velocity.subscribe(velocity => {
-      vel.current = velocity
-    })
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  useFrame(() => {
-    // camera
-    camera.position.copy(new Vector3(pos.current[0], pos.current[1], pos.current[2]))
-
-    // direction
-    // x 1 right
-    // x -1 left
-    // z 1 back
-    // z -1 front
-    const frontDirection = new Vector3(0, 0, 0)
-    if (actions.moveForward) {
-      frontDirection.setZ(-1)
-    } else if (actions.moveBackward) {
-      frontDirection.setZ(1)
-    }
-    const sideDirection = new Vector3(0, 0, 0)
-    if (actions.moveLeft) {
-      sideDirection.setX(-1)
-    } else if (actions.moveRight) {
-      sideDirection.setX(1)
-    }
-    const finalDirection = new Vector3()
-    finalDirection.addVectors(frontDirection, sideDirection)
-    finalDirection.multiplyScalar(SPEED)
-    finalDirection.applyEuler(camera.rotation)
-    api.velocity.set(finalDirection.x, vel.current[1], finalDirection.z)
-
-    // jump
-    if (actions.jump && Math.abs(vel.current[1]) < 0.01) {
-      api.velocity.set(vel.current[0], JUMP_FORCE, vel.current[2])
-    }
-  })
-
   return (
-    <mesh ref={ref}></mesh>
+    <>
+      <RigidBody ref={ref} colliders={false} mass={1} type="dynamic" position={[0, 10, 0]} enabledRotations={[false, false, false]}>
+        <CapsuleCollider args={[0.75, 0.5]} />
+        <mesh></mesh>
+      </RigidBody>
+    </>
   )
 }
