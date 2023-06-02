@@ -5,6 +5,7 @@ import { Canvas } from '@react-three/fiber'
 import { Player } from './component/player/index'
 import { Bedrock } from './component/terrain/bedrock'
 import { Suspense } from "react";
+import { Terrain } from "./component/terrain";
 
 function App() {
   return (
@@ -16,13 +17,13 @@ function App() {
         { name: "right", keys: ["ArrowRight", "d", "D"] },
         { name: "jump", keys: ["Space"] },
       ]}>
-      <Canvas camera={{ fov: 45 }}>
+      <Canvas camera={{ fov: 50, far: 500 }}>
         <Suspense>
           <Sky />
           <ambientLight intensity={0.3} />
-          <Physics gravity={[0, -30, 0]}>
+          <Physics debug gravity={[0, -30, 0]}>
             <Player></Player>
-            {/* <Terrain></Terrain> */}
+            <Terrain></Terrain>
             <Bedrock></Bedrock>
           </Physics>
           <PointerLockControls />
