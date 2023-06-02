@@ -2,9 +2,9 @@ import { PointerLockControls, Sky, KeyboardControls } from "@react-three/drei";
 import './App.css'
 import { Physics } from '@react-three/rapier'
 import { Canvas } from '@react-three/fiber'
-import { Terrain } from './component/terrain/index'
 import { Player } from './component/player/index'
 import { Bedrock } from './component/terrain/bedrock'
+import { Suspense } from "react";
 
 function App() {
   return (
@@ -17,14 +17,16 @@ function App() {
         { name: "jump", keys: ["Space"] },
       ]}>
       <Canvas camera={{ fov: 45 }}>
-        <Sky />
-        <ambientLight intensity={0.3} />
-        <Physics gravity={[0, -30, 0]}>
-          <Player></Player>
-          {/* <Terrain></Terrain> */}
-          <Bedrock></Bedrock>
-        </Physics>
-        <PointerLockControls />
+        <Suspense>
+          <Sky />
+          <ambientLight intensity={0.3} />
+          <Physics gravity={[0, -30, 0]}>
+            <Player></Player>
+            {/* <Terrain></Terrain> */}
+            <Bedrock></Bedrock>
+          </Physics>
+          <PointerLockControls />
+        </Suspense>
       </Canvas>
     </KeyboardControls>
   )

@@ -3,36 +3,33 @@ import * as RAPIER from "@dimforge/rapier3d-compat"
 import { useRef } from "react"
 import { useFrame } from "@react-three/fiber"
 import { useKeyboardControls } from "@react-three/drei"
-import { CapsuleCollider, RapierRigidBody, RigidBody, useRapier } from "@react-three/rapier"
+import { CapsuleCollider, RapierContext, RapierRigidBody, RigidBody, useRapier } from "@react-three/rapier"
 
-const SPEED = 5
+const SPEED = 10
 const direction = new THREE.Vector3()
 const frontVector = new THREE.Vector3()
 const sideVector = new THREE.Vector3()
-const rotation = new THREE.Vector3()
 
-export function Player({ lerp = THREE.MathUtils.lerp }) {
-  const axe = useRef()
+export function Player() {
   const ref = useRef<RapierRigidBody>()
-  const rapier = useRapier()
+  const rapier: RapierContext = useRapier()
   const [, get] = useKeyboardControls()
   useFrame((state) => {
     const { forward, backward, left, right, jump } = get()
-    console.log(forward, backward, left, right, jump)
     if (ref.current) {
       const velocity = ref.current.linvel()
       // update camera
       state.camera.position.set(ref.current.translation().x, ref.current.translation().y, ref.current.translation().z)
       // movement
-      frontVector.set(0, 0, backward - forward)
-      sideVector.set(left - right, 0, 0)
+      frontVector.set(0, 0, Number(backward) - Number(forward))
+      sideVector.set(Number(left) - Number(right), 0, 0)
       direction.subVectors(frontVector, sideVector).normalize().multiplyScalar(SPEED).applyEuler(state.camera.rotation)
       ref.current.setLinvel({ x: direction.x, y: velocity.y, z: direction.z }, true)
       // jumping
-      // const world = rapier.world.raw()
-      // const ray = world.castRay(new RAPIER.Ray(ref.current.translation(), { x: 0, y: -1, z: 0 }))
-      // const grounded = ray && ray.collider && Math.abs(ray.toi) <= 1.75
-      // if (jump && grounded) ref.current.setLinvel({ x: 0, y: 7.5, z: 0 })
+      const world = rapier.world
+      const ray = world.castRay(new RAPIER.Ray(ref.current.translation(), { x: 0, y: -1, z: 0 }), 1, true)
+      const grounded = ray && ray.collider && Math.abs(ray.toi) <= 1.75
+      if (jump && grounded) ref.current.setLinvel({ x: 0, y: 7.5, z: 0 }, true)
     }
   })
   return (
