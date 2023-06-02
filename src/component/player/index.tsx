@@ -1,16 +1,23 @@
 import * as THREE from "three"
 import * as RAPIER from "@dimforge/rapier3d-compat"
 import { useRef } from "react"
-import { useFrame } from "@react-three/fiber"
-import { useKeyboardControls } from "@react-three/drei"
+import { useFrame, useThree } from "@react-three/fiber"
+import { useHelper, useKeyboardControls } from "@react-three/drei"
 import { CapsuleCollider, RapierContext, RapierRigidBody, RigidBody, useRapier } from "@react-three/rapier"
+import { CameraHelper } from "three"
 
 const SPEED = 10
 const direction = new THREE.Vector3()
 const frontVector = new THREE.Vector3()
 const sideVector = new THREE.Vector3()
 
-export function Player() {
+export const Player = () => {
+
+  const { camera } = useThree()
+  const cameraRef = useRef(camera)
+
+  useHelper(cameraRef, CameraHelper)
+
   const ref = useRef<RapierRigidBody>()
   const rapier: RapierContext = useRapier()
   const [, get] = useKeyboardControls()
