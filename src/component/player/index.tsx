@@ -1,50 +1,42 @@
-import * as THREE from "three"
-import * as RAPIER from "@dimforge/rapier3d-compat"
 import { useRef } from "react"
+import { PointerLockControls } from "three/examples/jsm/controls/PointerLockControls"
 import { useFrame, useThree } from "@react-three/fiber"
 import { useHelper, useKeyboardControls } from "@react-three/drei"
-import { CapsuleCollider, RapierContext, RapierRigidBody, RigidBody, useRapier } from "@react-three/rapier"
-import { CameraHelper } from "three"
+import { Mesh, Vector3 } from "three"
+import useEffectState from "@/hooks/useEffectState"
+
 
 const SPEED = 10
-const direction = new THREE.Vector3()
-const frontVector = new THREE.Vector3()
-const sideVector = new THREE.Vector3()
+const frontDirection = new Vector3()
+const sideDirection = new Vector3()
+const frontVector = new Vector3()
+
 
 export const Player = () => {
+  const ref = useRef<Mesh>(null)
+  const { controls } = useThree()
+  // const [, get] = useKeyboardControls()
+  // const controls = useEffectState(() => new PointerLockControls(camera, gl.domElement), [camera, gl.domElement])
 
-  const { camera } = useThree()
-  const cameraRef = useRef(camera)
-
-  useHelper(cameraRef, CameraHelper)
-
-  const ref = useRef<RapierRigidBody>()
-  const rapier: RapierContext = useRapier()
-  const [, get] = useKeyboardControls()
   useFrame((state) => {
-    const { forward, backward, left, right, jump } = get()
-    if (ref.current) {
-      const velocity = ref.current.linvel()
-      // update camera
-      state.camera.position.set(ref.current.translation().x, ref.current.translation().y, ref.current.translation().z)
-      // movement
-      frontVector.set(0, 0, Number(backward) - Number(forward))
-      sideVector.set(Number(left) - Number(right), 0, 0)
-      direction.subVectors(frontVector, sideVector).normalize().multiplyScalar(SPEED).applyEuler(state.camera.rotation)
-      ref.current.setLinvel({ x: direction.x, y: velocity.y, z: direction.z }, true)
-      // jumping
-      const world = rapier.world
-      const ray = world.castRay(new RAPIER.Ray(ref.current.translation(), { x: 0, y: -1, z: 0 }), 1, true)
-      const grounded = ray && ray.collider && Math.abs(ray.toi) <= 1.75
-      if (jump && grounded) ref.current.setLinvel({ x: 0, y: 7.5, z: 0 }, true)
-    }
+    console.log(state, controls)
+    // const { forward, backward, left, right, jump } = get()
+    // if (ref.current) {
+    //   state.camera.position.copy(ref.current.position)
+    //   frontDirection.set(0, 0, Number(backward) - Number(forward))
+    //   sideDirection.set(Number(left) - Number(right), 0, 0)
+
+    //   const finalDirection = new Vector3()
+    //   finalDirection.addVectors(frontDirection, sideDirection)
+    //   finalDirection.multiplyScalar(SPEED)
+    //   finalDirection.applyEuler(state.camera.rotation)
+
+    //   ref.current.position.set(finalDirection.x, 0, finalDirection.z)
+    // }
   })
   return (
     <>
-      <RigidBody ref={ref} colliders={false} mass={1} type="dynamic" position={[0, 10, 0]} enabledRotations={[false, false, false]}>
-        <CapsuleCollider args={[0.75, 0.5]} />
-        <mesh></mesh>
-      </RigidBody>
+      <mesh ref={ref}></mesh>
     </>
   )
 }

@@ -1,4 +1,4 @@
-import { RapierRigidBody, InstancedRigidBodies, InstancedRigidBodyProps } from "@react-three/rapier"
+import { RapierRigidBody, InstancedRigidBodies, InstancedRigidBodyProps, RigidBody } from "@react-three/rapier"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { BoxGeometry } from "three"
 import Materials, { MaterialType } from "./mesh/materials"
@@ -14,8 +14,8 @@ export const Terrain = () => {
   useEffect(() => {
     if (ref.current) {
       let index = 0;
-      for (let i = 0; i < 10; i++) {
-        for (let j = 0; j < 10; j++) {
+      for (let i = 0; i < count; i++) {
+        for (let j = 0; j < count; j++) {
           ref.current.at(index)?.setTranslation({ x: i, y: 0, z: j }, true)
           index += 1;
         }
@@ -26,7 +26,7 @@ export const Terrain = () => {
   const instances = useMemo(() => {
     const instances: InstancedRigidBodyProps[] = [];
 
-    for (let i = 0; i < count; i++) {
+    for (let i = 0; i < count * count; i++) {
       instances.push({
         key: 'instance_' + Math.random(),
         position: [0, 0, 0],
@@ -39,7 +39,7 @@ export const Terrain = () => {
 
   return (
     <InstancedRigidBodies ref={ref} instances={instances} type="fixed">
-      <instancedMesh args={[boxGeometry, materials.get(MaterialType.grass), count]}></instancedMesh>
+      <instancedMesh args={[boxGeometry, materials.get(MaterialType.grass), count * count]}></instancedMesh>
     </InstancedRigidBodies>
   )
 }
