@@ -5,8 +5,8 @@ import {useLayoutEffect, useState } from "react"
 //   else if (ref != null) ref.current = value
 // }
 
-export default function useEffectState(fn: () => unknown, deps: unknown[],) {
-  const [state, set] = useState<unknown>()
+export default function useEffectState<T>(fn: () => T, deps: unknown[],) {
+  const [state, set] = useState<T>()
   useLayoutEffect(() => {
     const value = fn()
     set(value)
