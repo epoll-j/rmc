@@ -16,6 +16,7 @@ export const Player = () => {
   const [, get] = useKeyboardControls()
 
   useFrame((state) => {
+    console.log(state)
     const { forward, backward, left, right, shift } = get()
     if (ref.current) {
       speed = (blocksPerSec + blocksPerSec * Number(shift) * runMultiplier) / fpsRef.current
@@ -34,7 +35,7 @@ export const Player = () => {
   })
   return (
     <>
-      <mesh ref={ref}></mesh>
+      <mesh position={[8, 50, 8]} ref={ref}></mesh>
     </>
   )
 }

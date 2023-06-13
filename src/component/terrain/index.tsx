@@ -1,45 +1,60 @@
-import { RapierRigidBody, InstancedRigidBodies, InstancedRigidBodyProps, RigidBody } from "@react-three/rapier"
 import { useEffect, useMemo, useRef, useState } from "react"
-import { BoxGeometry } from "three"
+import { BoxGeometry, InstancedBufferAttribute, Vector2 } from "three"
 import Materials, { MaterialType } from "./mesh/materials"
 import Worker from './worker?worker'
 
-export const Terrain = () => {
-  const ref = useRef<RapierRigidBody[]>(null)
+const materialList = [MaterialType.grass]
+const blocksFactor = [1]
+const seed = Math.random()
+const distance = 3
+const chunkSize = 24
 
-  const boxGeometry = new BoxGeometry(1, 1, 1)
+export const Terrain = () => {
+
+  const boxGeometry = new BoxGeometry()
   const materials = new Materials()
-  const [count,] = useState(100)
+  const generateWorker = new Worker()
+  const chunk = new Vector2(0, 0)
+  let blocksCount = new Array(materialList.length).fill(0)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const refs = useRef<any>([])
 
   useEffect(() => {
-    if (ref.current) {
-      let index = 0;
-      for (let i = 0; i < count; i++) {
-        for (let j = 0; j < count; j++) {
-          ref.current.at(index)?.setTranslation({ x: i, y: 0, z: j }, true)
-          index += 1;
-        }
+    generateWorker.onmessage = (msg => {
+      blocksCount = msg.data.blocksCount
+
+      for (let i = 0; i < msg.data.arrays.length; i++) {
+        refs.current[i].instanceMatrix = new InstancedBufferAttribute(
+          ( refs.current[i].instanceMatrix.array = msg.data.arrays[i]),
+          16
+        )
       }
-    }
+
+      for (const block of refs.current) {
+        block.instanceMatrix.needsUpdate = true
+      }
+    })
+
+    generateWorker.postMessage(
+      {
+        distance: distance,
+        chunk: chunk,
+        seed: seed,
+        idMap: new Map<string, number>(),
+        blocksFactor: blocksFactor,
+        blocksCount: blocksCount,
+        chunkSize: chunkSize
+      }
+    )
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const instances = useMemo(() => {
-    const instances: InstancedRigidBodyProps[] = [];
-
-    for (let i = 0; i < count * count; i++) {
-      instances.push({
-        key: 'instance_' + Math.random(),
-        position: [0, 0, 0],
-        rotation: [0, 0, 0],
-      });
-    }
-
-    return instances;
-  }, []);
-
   return (
-    <InstancedRigidBodies ref={ref} instances={instances} type="fixed">
-      <instancedMesh args={[boxGeometry, materials.get(MaterialType.grass), count * count]}></instancedMesh>
-    </InstancedRigidBodies>
+    <>
+      { materialList.map((type, index) => 
+          <instancedMesh key={index} ref={(ref) => { refs.current[index] = ref }} args={[boxGeometry, materials.get(type), (distance * chunkSize * 2 + chunkSize) ** 2 + 500]}></instancedMesh>
+        ) 
+      }
+    </>
   )
 }
