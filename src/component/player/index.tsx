@@ -1,38 +1,38 @@
 import { useRef } from "react"
-import { PointerLockControls } from "three/examples/jsm/controls/PointerLockControls"
-import { useFrame, useThree } from "@react-three/fiber"
-import { useHelper, useKeyboardControls } from "@react-three/drei"
+import { useFrame } from "@react-three/fiber"
+import { useKeyboardControls } from "@react-three/drei"
 import { Mesh, Vector3 } from "three"
-import useEffectState from "@/hooks/useEffectState"
+import useFPS from "@/hooks/useFPS"
 
 
-const SPEED = 10
+let speed = 0
 const frontDirection = new Vector3()
 const sideDirection = new Vector3()
-const frontVector = new Vector3()
+const runMultiplier = 1.15
+const blocksPerSec = 5
 
 
 export const Player = () => {
   const ref = useRef<Mesh>(null)
-  const { controls } = useThree()
-  // const [, get] = useKeyboardControls()
-  // const controls = useEffectState(() => new PointerLockControls(camera, gl.domElement), [camera, gl.domElement])
+  const fpsRef = useFPS()
+  const [, get] = useKeyboardControls()
 
   useFrame((state) => {
-    console.log(state, controls)
-    // const { forward, backward, left, right, jump } = get()
-    // if (ref.current) {
-    //   state.camera.position.copy(ref.current.position)
-    //   frontDirection.set(0, 0, Number(backward) - Number(forward))
-    //   sideDirection.set(Number(left) - Number(right), 0, 0)
+    const { forward, backward, left, right, shift } = get()
+    if (ref.current) {
+      speed = (blocksPerSec + blocksPerSec * Number(shift) * runMultiplier) / fpsRef.current
+      if (speed != Infinity) {
+        state.camera.position.copy(ref.current.position)
+        frontDirection.set(0, 0, Number(backward) - Number(forward))
+        sideDirection.set(Number(left) - Number(right), 0, 0)
 
-    //   const finalDirection = new Vector3()
-    //   finalDirection.addVectors(frontDirection, sideDirection)
-    //   finalDirection.multiplyScalar(SPEED)
-    //   finalDirection.applyEuler(state.camera.rotation)
-
-    //   ref.current.position.set(finalDirection.x, 0, finalDirection.z)
-    // }
+        const finalDirection = new Vector3()
+        finalDirection.addVectors(frontDirection, sideDirection)
+        finalDirection.multiplyScalar(speed)
+        finalDirection.applyEuler(state.camera.rotation)
+        ref.current.position.set(ref.current.position.x + finalDirection.x, 0, ref.current.position.z + finalDirection.z)
+      }
+    }
   })
   return (
     <>
