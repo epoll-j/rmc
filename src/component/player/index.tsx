@@ -4,13 +4,11 @@ import { useKeyboardControls } from "@react-three/drei"
 import { Mesh, Vector3 } from "three"
 import useFPS from "@/hooks/useFPS"
 
-
 let speed = 0
 const frontDirection = new Vector3()
 const sideDirection = new Vector3()
 const runMultiplier = 1.15
 const blocksPerSec = 5
-
 
 export const Player = () => {
   const ref = useRef<Mesh>(null)
