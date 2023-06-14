@@ -4,7 +4,6 @@ import { Canvas } from '@react-three/fiber'
 import { Player } from './component/player/index'
 import { Terrain } from './component/terrain/index'
 import { Suspense } from "react";
-import { Vector3 } from "three";
 
 function App() {
 

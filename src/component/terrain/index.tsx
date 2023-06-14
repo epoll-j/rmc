@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from "react"
-import { BoxGeometry, DoubleSide, InstancedBufferAttribute, InstancedMesh, Object3D, Vector2 } from "three"
+import { useBlocks } from "@/hooks/useBlocks"
+import { memo, useEffect, useMemo, useRef } from "react"
+import { BoxGeometry, InstancedBufferAttribute, Vector2 } from "three"
 import Materials, { MaterialType } from "./mesh/materials"
 import Worker from './worker?worker'
 
@@ -9,8 +10,8 @@ const seed = Math.random()
 const distance = 3
 const chunkSize = 24
 
-export const Terrain = () => {
-
+export const Terrain = memo(() => {
+  const { setBlockMap } = useBlocks()
   const boxGeometry = new BoxGeometry()
   const materials = new Materials()
   const generateWorker = new Worker()
@@ -23,19 +24,18 @@ export const Terrain = () => {
     generateWorker.onmessage = (msg => {
       // eslint-disable-next-line react-hooks/exhaustive-deps
       blocksCount = msg.data.blocksCount
-
       for (let i = 0; i < msg.data.arrays.length; i++) {
         refs.current[i].instanceMatrix = new InstancedBufferAttribute(
-          ( refs.current[i].instanceMatrix.array = msg.data.arrays[i]),
+          (refs.current[i].instanceMatrix.array = msg.data.arrays[i]),
           16
         )
       }
 
       for (const block of refs.current) {
-        block.material.side = DoubleSide
         block.instanceMatrix.needsUpdate = true
         block.frustumCulled = false
       }
+      setBlockMap(msg.data.idMap)
     })
 
     generateWorker.postMessage(
@@ -52,13 +52,18 @@ export const Terrain = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  return (
-    <>
-      { 
-        materialList.map((type, index) => 
-          <instancedMesh key={index} ref={(ref) => { refs.current[index] = ref }} args={[boxGeometry, materials.get(type), (distance * chunkSize * 2 + chunkSize) ** 2 + 500]}></instancedMesh>
-        ) 
-      }
-    </>
-  )
-}
+  const mesh = useMemo(() => {
+    return (
+      <>
+        {
+          materialList.map((type, index) =>
+            <instancedMesh key={index} ref={(ref) => { refs.current[index] = ref }} args={[boxGeometry, materials.get(type), (distance * chunkSize * 2 + chunkSize) ** 2 + 500]}></instancedMesh>
+          )
+        }
+      </>
+    )
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  return mesh
+})

@@ -3,6 +3,7 @@ import { useFrame } from "@react-three/fiber"
 import { useKeyboardControls } from "@react-three/drei"
 import { Mesh, Vector3 } from "three"
 import useFPS from "@/hooks/useFPS"
+import { useBlocks } from "@/hooks/useBlocks"
 
 let speed = 0
 const frontDirection = new Vector3()
@@ -14,6 +15,7 @@ export const Player = () => {
   const ref = useRef<Mesh>(null)
   const fpsRef = useFPS()
   const [, get] = useKeyboardControls()
+  const { blockMap } = useBlocks()
 
   useFrame((state) => {
     const { forward, backward, left, right, shift } = get()
@@ -28,13 +30,15 @@ export const Player = () => {
         finalDirection.addVectors(frontDirection, sideDirection)
         finalDirection.multiplyScalar(speed)
         finalDirection.applyEuler(state.camera.rotation)
-        ref.current.position.set(ref.current.position.x + finalDirection.x, 50, ref.current.position.z + finalDirection.z)
+        ref.current.position.set(ref.current.position.x + finalDirection.x, ref.current.position.y - speed, ref.current.position.z + finalDirection.z)
+        
+        console.log(blockMap.get(`${Math.floor(ref.current.position.x)}_${Math.floor(ref.current.position.y)}_${Math.floor(ref.current.position.z)}`))
       }
     }
   })
   return (
     <>
-      <mesh position={[8, 50, 8]} ref={ref}></mesh>
+      <mesh position={[8, 60, 8]} ref={ref}></mesh>
     </>
   )
 }

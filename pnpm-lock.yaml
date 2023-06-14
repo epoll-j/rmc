@@ -17,6 +17,7 @@ specifiers:
   three: ^0.152.2
   typescript: ^5.0.2
   vite: ^4.3.2
+  zustand: ^4.3.8
 
 dependencies:
   '@react-three/drei': registry.npmmirror.com/@react-three/drei/9.70.0_8210d408bd99f5d712fb3b70af677ba0
@@ -24,6 +25,7 @@ dependencies:
   react: registry.npmmirror.com/react/18.2.0
   react-dom: registry.npmmirror.com/react-dom/18.2.0_react@18.2.0
   three: registry.npmmirror.com/three/0.152.2
+  zustand: registry.npmmirror.com/zustand/4.3.8_react@18.2.0
 
 devDependencies:
   '@types/react': registry.npmmirror.com/@types/react/18.2.7
@@ -2391,6 +2393,17 @@ packages:
       punycode: registry.npmmirror.com/punycode/2.3.0
     dev: true
 
+  registry.npmmirror.com/use-sync-external-store/1.2.0_react@18.2.0:
+    resolution: {integrity: sha512-eEgnFxGQ1Ife9bzYs6VLi8/4X6CObHMw9Qr9tPY43iKwsPw8xE8+EFsf/2cFZ5S3esXgpWgtSCtLNS41F+sKPA==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/use-sync-external-store/-/use-sync-external-store-1.2.0.tgz}
+    id: registry.npmmirror.com/use-sync-external-store/1.2.0
+    name: use-sync-external-store
+    version: 1.2.0
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      react: registry.npmmirror.com/react/18.2.0
+    dev: false
+
   registry.npmmirror.com/utility-types/3.10.0:
     resolution: {integrity: sha512-O11mqxmi7wMKCo6HKFt5AhO4BwY3VV68YU07tgxfz8zJTIxr4BpsezN49Ffwy9j3ZpwwJp4fkRwjRzq3uWE6Rg==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/utility-types/-/utility-types-3.10.0.tgz}
     name: utility-types
@@ -2499,4 +2512,23 @@ packages:
         optional: true
     dependencies:
       react: registry.npmmirror.com/react/18.2.0
+    dev: false
+
+  registry.npmmirror.com/zustand/4.3.8_react@18.2.0:
+    resolution: {integrity: sha512-4h28KCkHg5ii/wcFFJ5Fp+k1J3gJoasaIbppdgZFO4BPJnsNxL0mQXBSFgOgAdCdBj35aDTPvdAJReTMntFPGg==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/zustand/-/zustand-4.3.8.tgz}
+    id: registry.npmmirror.com/zustand/4.3.8
+    name: zustand
+    version: 4.3.8
+    engines: {node: '>=12.7.0'}
+    peerDependencies:
+      immer: '>=9.0'
+      react: '>=16.8'
+    peerDependenciesMeta:
+      immer:
+        optional: true
+      react:
+        optional: true
+    dependencies:
+      react: registry.npmmirror.com/react/18.2.0
+      use-sync-external-store: registry.npmmirror.com/use-sync-external-store/1.2.0_react@18.2.0
     dev: false
