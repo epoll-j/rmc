@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react"
-import { BoxGeometry, InstancedBufferAttribute, Vector2 } from "three"
+import { BoxGeometry, DoubleSide, InstancedBufferAttribute, InstancedMesh, Object3D, Vector2 } from "three"
 import Materials, { MaterialType } from "./mesh/materials"
 import Worker from './worker?worker'
 
@@ -17,10 +17,11 @@ export const Terrain = () => {
   const chunk = new Vector2(0, 0)
   let blocksCount = new Array(materialList.length).fill(0)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const refs = useRef<any>([])
+  const refs = useRef<any[]>([])
 
   useEffect(() => {
     generateWorker.onmessage = (msg => {
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       blocksCount = msg.data.blocksCount
 
       for (let i = 0; i < msg.data.arrays.length; i++) {
@@ -31,7 +32,9 @@ export const Terrain = () => {
       }
 
       for (const block of refs.current) {
+        block.material.side = DoubleSide
         block.instanceMatrix.needsUpdate = true
+        block.frustumCulled = false
       }
     })
 
@@ -51,7 +54,8 @@ export const Terrain = () => {
 
   return (
     <>
-      { materialList.map((type, index) => 
+      { 
+        materialList.map((type, index) => 
           <instancedMesh key={index} ref={(ref) => { refs.current[index] = ref }} args={[boxGeometry, materials.get(type), (distance * chunkSize * 2 + chunkSize) ** 2 + 500]}></instancedMesh>
         ) 
       }

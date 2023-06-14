@@ -17,7 +17,6 @@ const dirtMaterial = loader.load(dirt)
 // bedrockMaterial.magFilter = NearestFilter
 // bedrockMaterial.wrapS = RepeatWrapping
 // bedrockMaterial.wrapT = RepeatWrapping
-
 grassTopMaterial.magFilter = THREE.NearestFilter
 grassMaterial.magFilter = THREE.NearestFilter
 dirtMaterial.magFilter = THREE.NearestFilter

@@ -16,7 +16,6 @@ export const Player = () => {
   const [, get] = useKeyboardControls()
 
   useFrame((state) => {
-    console.log(state)
     const { forward, backward, left, right, shift } = get()
     if (ref.current) {
       speed = (blocksPerSec + blocksPerSec * Number(shift) * runMultiplier) / fpsRef.current
@@ -29,7 +28,7 @@ export const Player = () => {
         finalDirection.addVectors(frontDirection, sideDirection)
         finalDirection.multiplyScalar(speed)
         finalDirection.applyEuler(state.camera.rotation)
-        ref.current.position.set(ref.current.position.x + finalDirection.x, 0, ref.current.position.z + finalDirection.z)
+        ref.current.position.set(ref.current.position.x + finalDirection.x, 50, ref.current.position.z + finalDirection.z)
       }
     }
   })

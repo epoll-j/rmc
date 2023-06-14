@@ -18,7 +18,7 @@ function App() {
         { name: "jump", keys: ["Space"] },
         { name: "shift", keys: ["Shift"] }
       ]}>
-      <Canvas camera={{ fov: 50, near: 0.01, far: 500, lookAt: () => new Vector3(100,30,100) }}>
+      <Canvas camera={{ fov: 50, near: 0.01, far: 500 }}>
         <Sky />
         <ambientLight intensity={0.3} />
         <Player></Player>
