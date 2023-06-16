@@ -1,4 +1,4 @@
-import { useBlocks } from "@/hooks/useBlocks"
+import { useBlocks } from "@/hooks/store/useBlocks"
 import { memo, useEffect, useMemo, useRef } from "react"
 import { BoxGeometry, InstancedBufferAttribute, Vector2 } from "three"
 import Materials, { MaterialType } from "./mesh/materials"

@@ -8,7 +8,6 @@ interface BlockStore {
 export const useBlocks = create<BlockStore>((set) => ({
   blockMap: new Map<string, number>(),
   setBlockMap(map) {
-    set(() => ({blockMap: map}))
-    console.log(map)
+    set(() => ({ blockMap: map }));
   },
 }));

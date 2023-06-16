@@ -3,13 +3,15 @@ import { useFrame } from "@react-three/fiber"
 import { useKeyboardControls } from "@react-three/drei"
 import { Mesh, Vector3 } from "three"
 import useFPS from "@/hooks/useFPS"
-import { useBlocks } from "@/hooks/useBlocks"
+import { useBlocks } from "@/hooks/store/useBlocks"
+import { CollideControl, CollideSide } from "./control/collideControl"
 
 let speed = 0
 const frontDirection = new Vector3()
 const sideDirection = new Vector3()
 const runMultiplier = 1.15
 const blocksPerSec = 5
+const control = new CollideControl()
 
 export const Player = () => {
   const ref = useRef<Mesh>(null)
@@ -30,9 +32,8 @@ export const Player = () => {
         finalDirection.addVectors(frontDirection, sideDirection)
         finalDirection.multiplyScalar(speed)
         finalDirection.applyEuler(state.camera.rotation)
-        ref.current.position.set(ref.current.position.x + finalDirection.x, ref.current.position.y - speed, ref.current.position.z + finalDirection.z)
-        
-        console.log(blockMap.get(`${Math.floor(ref.current.position.x)}_${Math.floor(ref.current.position.y)}_${Math.floor(ref.current.position.z)}`))
+
+        ref.current.position.set(ref.current.position.x + finalDirection.x, ref.current.position.y - (control.check(CollideSide.down, state.camera.position, blockMap) ? 0 : speed), ref.current.position.z + finalDirection.z)
       }
     }
   })
