@@ -6,7 +6,6 @@ import Worker from './worker?worker'
 
 const materialList = [MaterialType.grass]
 const blocksFactor = [1]
-const seed = Math.random()
 const distance = 3
 const chunkSize = 24
 
@@ -42,7 +41,6 @@ export const Terrain = memo(() => {
       {
         distance: distance,
         chunk: chunk,
-        seed: seed,
         idMap: new Map<string, number>(),
         blocksFactor: blocksFactor,
         blocksCount: blocksCount,

@@ -1,6 +1,6 @@
 import { BoxGeometry, InstancedBufferAttribute, InstancedMesh, Matrix4, MeshBasicMaterial, Vector2 } from 'three'
 // import Block from '../mesh/block'
-import Noise from '../noise'
+import Noise from '@/utils/noise'
 
 enum BlockType {
   grass = 0,
@@ -18,7 +18,7 @@ enum BlockType {
 }
 
 const matrix = new Matrix4()
-const noise = new Noise()
+const noise = Noise.getInstance()
 const blocks: InstancedMesh[] = []
 
 const geometry = new BoxGeometry()
@@ -29,7 +29,6 @@ onmessage = (
   msg: MessageEvent<{
     distance: number
     chunk: Vector2
-    seed: number,
     idMap: Map<string, number>
     blocksFactor: number[]
     blocksCount: number[]
@@ -40,7 +39,6 @@ onmessage = (
   const {
     distance,
     chunk,
-    seed,
     idMap,
     blocksFactor,
     // customBlocks,
@@ -63,10 +61,10 @@ onmessage = (
     isFirstRun = false
   }
 
-  noise.seed = seed
-  noise.treeSeed *= seed
-  noise.stoneSeed *= seed
-  noise.coalSeed *= seed
+  // noise.seed = seed
+  // noise.treeSeed *= seed
+  // noise.stoneSeed *= seed
+  // noise.coalSeed *= seed
 
   for (let i = 0; i < blocks.length; i++) {
     blocks[i].instanceMatrix = new InstancedBufferAttribute(
