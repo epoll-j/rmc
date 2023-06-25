@@ -17,7 +17,7 @@ export const Player = () => {
   const ref = useRef<Mesh>(null)
   const fpsRef = useFPS()
   const [, get] = useKeyboardControls()
-  const { blockMap } = useBlocks()
+  // const { blockMap } = useBlocks()
 
   useFrame((state) => {
     const { forward, backward, left, right, shift } = get()
@@ -33,7 +33,7 @@ export const Player = () => {
         finalDirection.multiplyScalar(speed)
         finalDirection.applyEuler(state.camera.rotation)
 
-        ref.current.position.set(ref.current.position.x + finalDirection.x, ref.current.position.y - (control.check(CollideSide.down, state.camera.position, blockMap) ? 0 : speed), ref.current.position.z + finalDirection.z)
+        ref.current.position.set(ref.current.position.x + finalDirection.x, ref.current.position.y - (control.check(CollideSide.down, state.camera.position) ? 0 : speed), ref.current.position.z + finalDirection.z)
       }
     }
   })

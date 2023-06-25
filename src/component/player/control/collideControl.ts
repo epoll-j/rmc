@@ -1,3 +1,4 @@
+import Noise from '@/utils/noise';
 import * as THREE from 'three';
 import { BoxGeometry, InstancedMesh, Matrix4, MeshBasicMaterial, Raycaster, Vector3 } from "three";
 
@@ -17,6 +18,7 @@ export class CollideControl {
   #raycasterRight = new Raycaster();
   #raycasterLeft = new Raycaster();
   #matrix = new Matrix4()
+  #noise = Noise.getInstance()
 
   initRayCaster() {
     this.#raycasterUp.ray.direction = new Vector3(0, 1, 0);
@@ -34,8 +36,7 @@ export class CollideControl {
     this.#raycasterRight.far = 1;
   }
 
-  check(side: CollideSide, position: Vector3, blockMap: Map<string, number>): boolean {
-    const floorPosition = this.getFloorPosition(position)
+  check(side: CollideSide, position: Vector3): boolean {
     const tempMesh = new InstancedMesh(
       new BoxGeometry(1, 1, 1),
       new MeshBasicMaterial(),
@@ -45,29 +46,20 @@ export class CollideControl {
       new Float32Array(100 * 16),
       16
     )
-    // let x = Math.round(position.x)
-    // let z = Math.round(position.z)
+    let x = Math.round(position.x)
+    let z = Math.round(position.z)
+    const y =
+      Math.floor(
+        this.#noise.get(x / this.#noise.gap, z / this.#noise.gap, this.#noise.seed) * this.#noise.amp
+      ) + 30
     let index = 0
-    const temp = new Vector3()
+    
     switch(side) {
       case CollideSide.down:
-        temp.set(floorPosition.x, Math.floor(position.y - this.#raycasterDown.far), floorPosition.z)
-        if (blockMap.get(this.getPositionId(temp))) {
-          console.log(position)
-          this.#matrix.setPosition(temp)
-          tempMesh.setMatrixAt(index++, this.#matrix)
-        }
-        if (blockMap.get(this.getPositionId(floorPosition))) {
-          this.#matrix.setPosition(floorPosition)
-          tempMesh.setMatrixAt(index++, this.#matrix)
-        }
+        this.#matrix.setPosition(x, y, z)
+        tempMesh.setMatrixAt(index++, this.#matrix)
+        this.#raycasterDown.ray.origin = new Vector3().copy(position)
         break
-    }
-    
-    
-    switch(side) {
-      case CollideSide.down:
-        this.#raycasterDown.ray.origin = new Vector3(position.x, position.y - 1, position.z)
     }
 
     tempMesh.instanceMatrix.needsUpdate = true

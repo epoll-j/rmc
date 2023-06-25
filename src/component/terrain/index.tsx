@@ -10,7 +10,7 @@ const distance = 3
 const chunkSize = 24
 
 export const Terrain = memo(() => {
-  const { setBlockMap } = useBlocks()
+  // const { setBlockMap } = useBlocks()
   const boxGeometry = new BoxGeometry()
   const materials = new Materials()
   const generateWorker = new Worker()
@@ -34,7 +34,7 @@ export const Terrain = memo(() => {
         block.instanceMatrix.needsUpdate = true
         block.frustumCulled = false
       }
-      setBlockMap(msg.data.idMap)
+      // setBlockMap(msg.data.idMap)
     })
 
     generateWorker.postMessage(
