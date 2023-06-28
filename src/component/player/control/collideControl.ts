@@ -92,9 +92,19 @@ export class CollideControl {
 
     tempMesh.instanceMatrix.needsUpdate = true
     
-    return raycaster.intersectObject(tempMesh).length != 0
+    if (side == CollideSide.up || side == CollideSide.down) {
+      return raycaster.intersectObject(tempMesh).length != 0
+    }
+    
+    const origin = new THREE.Vector3(position.x, position.y - 1, position.z)
+    const collideCount = raycaster.intersectObject(tempMesh).length
+    raycaster.ray.origin = origin
+    return (collideCount != 0 || raycaster.intersectObject(tempMesh).length != 0)
   }
 
+  checkAll(position: Vector3): [boolean, boolean, boolean, boolean] {
+    return [this.check(CollideSide.front, position), this.check(CollideSide.back, position), this.check(CollideSide.left, position), this.check(CollideSide.right, position)]
+  }
 
   private getFloorPosition(position: Vector3): Vector3 {
     return new Vector3(Math.floor(position.x), Math.floor(position.y), Math.floor(position.z))
