@@ -4,6 +4,7 @@ import { Canvas } from '@react-three/fiber'
 import { Player } from './component/player/index'
 import { Terrain } from './component/terrain/index'
 import { Suspense } from "react";
+import { Physics } from "@react-three/rapier"
 
 function App() {
 
@@ -17,12 +18,16 @@ function App() {
         { name: "jump", keys: ["Space"] },
         { name: "shift", keys: ["Shift"] }
       ]}>
-      <Canvas camera={{ fov: 50, near: 0.01, far: 500 }}>
+      <Canvas camera={{
+        fov: 50, near: 0.01, far: 500
+      }}>
         <Sky />
         <ambientLight intensity={0.3} />
-        <Player></Player>
         <Suspense>
-          <Terrain></Terrain>
+          <Physics debug>
+            <Player></Player>
+            <Terrain></Terrain>
+          </Physics>
         </Suspense>
         <PointerLockControls></PointerLockControls>
       </Canvas>

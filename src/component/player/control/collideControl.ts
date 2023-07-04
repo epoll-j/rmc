@@ -1,6 +1,14 @@
-import Noise from '@/utils/noise';
-import * as THREE from 'three';
-import { BoxGeometry, InstancedMesh, Matrix4, MeshBasicMaterial, Raycaster, Vector3 } from "three";
+import Noise from "@/utils/noise";
+import { RapierRigidBody } from "@react-three/rapier";
+import * as THREE from "three";
+import {
+  BoxGeometry,
+  InstancedMesh,
+  Matrix4,
+  MeshBasicMaterial,
+  Raycaster,
+  Vector3,
+} from "three";
 
 export enum CollideSide {
   front,
@@ -8,7 +16,7 @@ export enum CollideSide {
   left,
   right,
   down,
-  up
+  up,
 }
 
 export class CollideControl {
@@ -16,9 +24,9 @@ export class CollideControl {
     this.initRayCaster();
   }
 
-  #raycasterMap = new Map<CollideSide, Raycaster>()
-  #matrix = new Matrix4()
-  #noise = Noise.getInstance()
+  #raycasterMap = new Map<CollideSide, Raycaster>();
+  #matrix = new Matrix4();
+  #noise = Noise.getInstance();
 
   initRayCaster() {
     const raycasterDown = new Raycaster();
@@ -42,12 +50,12 @@ export class CollideControl {
     raycasterLeft.far = 1;
     raycasterRight.far = 1;
 
-    this.#raycasterMap.set(CollideSide.front, raycasterFront)
-    this.#raycasterMap.set(CollideSide.back, raycasterBack)
-    this.#raycasterMap.set(CollideSide.left, raycasterLeft)
-    this.#raycasterMap.set(CollideSide.right, raycasterRight)
-    this.#raycasterMap.set(CollideSide.down, raycasterDown)
-    this.#raycasterMap.set(CollideSide.up, raycasterUp)
+    this.#raycasterMap.set(CollideSide.front, raycasterFront);
+    this.#raycasterMap.set(CollideSide.back, raycasterBack);
+    this.#raycasterMap.set(CollideSide.left, raycasterLeft);
+    this.#raycasterMap.set(CollideSide.right, raycasterRight);
+    this.#raycasterMap.set(CollideSide.down, raycasterDown);
+    this.#raycasterMap.set(CollideSide.up, raycasterUp);
   }
 
   check(side: CollideSide, position: Vector3): boolean {
@@ -55,66 +63,121 @@ export class CollideControl {
       new BoxGeometry(1, 1, 1),
       new MeshBasicMaterial(),
       16
-    )
+    );
     tempMesh.instanceMatrix = new THREE.InstancedBufferAttribute(
       new Float32Array(100 * 16),
       16
-    )
-    let x = Math.round(position.x)
-    let z = Math.round(position.z)
-    
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const raycaster = this.#raycasterMap.get(side)!
-    raycaster.ray.origin = new Vector3().copy(position)
+    );
+    let x = Math.round(position.x);
+    let z = Math.round(position.z);
 
-    switch(side) {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const raycaster = this.#raycasterMap.get(side)!;
+    raycaster.ray.origin = new Vector3().copy(position);
+
+    switch (side) {
       case CollideSide.front:
-        x += 1
-        break
+        x += 1;
+        break;
       case CollideSide.back:
-        x -= 1
-        break
+        x -= 1;
+        break;
       case CollideSide.left:
-        z -= 1
-        break
+        z -= 1;
+        break;
       case CollideSide.right:
-        z += 1
-        break
+        z += 1;
+        break;
     }
-    
+
     const y =
       Math.floor(
-        this.#noise.get(x / this.#noise.gap, z / this.#noise.gap, this.#noise.seed) * this.#noise.amp
-      ) + 30
-    
-    this.#matrix.setPosition(x, y, z)
-    tempMesh.setMatrixAt(0, this.#matrix)
+        this.#noise.get(
+          x / this.#noise.gap,
+          z / this.#noise.gap,
+          this.#noise.seed
+        ) * this.#noise.amp
+      ) + 30;
 
-    tempMesh.instanceMatrix.needsUpdate = true
-    
+    this.#matrix.setPosition(2, 0, 2);
+    tempMesh.setMatrixAt(0, this.#matrix);
+
+    tempMesh.instanceMatrix.needsUpdate = true;
+
     if (side == CollideSide.up || side == CollideSide.down) {
-      return raycaster.intersectObject(tempMesh).length != 0
+      return raycaster.intersectObject(tempMesh).length != 0;
     }
-    
-    const origin = new THREE.Vector3(position.x, position.y - 1, position.z)
-    const collideCount = raycaster.intersectObject(tempMesh).length
-    raycaster.ray.origin = origin
-    return (collideCount != 0 || raycaster.intersectObject(tempMesh).length != 0)
+
+    const origin = new THREE.Vector3(position.x, position.y - 1, position.z);
+    const collideCount = raycaster.intersectObject(tempMesh).length;
+    raycaster.ray.origin = origin;
+    return collideCount != 0 || raycaster.intersectObject(tempMesh).length != 0;
   }
 
   checkAll(position: Vector3): [boolean, boolean, boolean, boolean] {
-    return [this.check(CollideSide.front, position), this.check(CollideSide.back, position), this.check(CollideSide.left, position), this.check(CollideSide.right, position)]
+    return [
+      this.check(CollideSide.front, position),
+      this.check(CollideSide.back, position),
+      this.check(CollideSide.left, position),
+      this.check(CollideSide.right, position),
+    ];
   }
 
-  private getFloorPosition(position: Vector3): Vector3 {
-    return new Vector3(Math.floor(position.x), Math.floor(position.y), Math.floor(position.z))
-  }
+  // private getFloorPosition(position: Vector3): Vector3 {
+  //   return new Vector3(Math.floor(position.x), Math.floor(position.y), Math.floor(position.z))
+  // }
 
-  private getCeilPosition(position: Vector3): Vector3 {
-    return new Vector3(Math.ceil(position.x), Math.ceil(position.y), Math.ceil(position.z))
-  }
+  // private getCeilPosition(position: Vector3): Vector3 {
+  //   return new Vector3(Math.ceil(position.x), Math.ceil(position.y), Math.ceil(position.z))
+  // }
 
-  private getPositionId(position: Vector3) {
-    return `${position.x}_${position.y}_${position.z}`
+  // private getPositionId(position: Vector3) {
+  //   return `${position.x}_${position.y}_${position.z}`
+  // }
+
+  moveRigidBody(position: Vector3, rigidBody: RapierRigidBody[]) {
+    const x = Math.round(position.x);
+    const z = Math.round(position.z);
+    const y =
+      Math.floor(
+        this.#noise.get(
+          x / this.#noise.gap,
+          z / this.#noise.gap,
+          this.#noise.seed
+        ) * this.#noise.amp
+      ) + 30;
+
+    for (let i = 0; i < 9; i++) {
+      switch (i) {
+        case 0:
+          rigidBody.at(i)?.setTranslation({ x: x, y: y, z: z }, true);
+          // rigidBody.at(10)?.setTranslation({x: x, y: y, z: z}, true)
+          break;
+        case 1:
+          rigidBody.at(i)?.setTranslation({ x: x + 1, y: y, z: z }, true);
+          break;
+        case 2:
+          rigidBody.at(i)?.setTranslation({ x: x - 1, y: y, z: z }, true);
+          break;
+        case 3:
+          rigidBody.at(i)?.setTranslation({ x: x, y: y, z: z + 1 }, true);
+          break;
+        case 4:
+          rigidBody.at(i)?.setTranslation({ x: x, y: y, z: z - 1 }, true);
+          break;
+        // case 5:
+        //   rigidBody.at(i)?.setTranslation({ x: x + 1, y: y, z: z + 1 }, true);
+        //   break;
+        // case 6:
+        //   rigidBody.at(i)?.setTranslation({ x: x - 1, y: y, z: z + 1 }, true);
+        //   break;
+        // case 7:
+        //   rigidBody.at(i)?.setTranslation({ x: x + 1, y: y, z: z - 1 }, true);
+        //   break;
+        // case 8:
+        //   rigidBody.at(i)?.setTranslation({ x: x - 1, y: y, z: z - 1 }, true);
+        //   break;
+      }
+    }
   }
 }
