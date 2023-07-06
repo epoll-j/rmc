@@ -1,7 +1,9 @@
 import { useBlocks } from "@/hooks/store/useBlocks"
+import useOctree from "@/hooks/useOctree"
+import { useThree } from "@react-three/fiber"
 import { InstancedRigidBodies, RigidBody } from "@react-three/rapier"
 import { memo, useEffect, useMemo, useRef } from "react"
-import { BoxGeometry, InstancedBufferAttribute, Vector2 } from "three"
+import { BoxGeometry, InstancedBufferAttribute, Matrix4, Vector2, Vector3 } from "three"
 import Materials, { MaterialType } from "./mesh/materials"
 import Worker from './worker?worker'
 
@@ -16,10 +18,13 @@ export const Terrain = memo(() => {
   const materials = new Materials()
   const generateWorker = new Worker()
   const chunk = new Vector2(0, 0)
+  const { scene } = useThree()
+  
   let blocksCount = new Array(materialList.length).fill(0)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const refs = useRef<any[]>([])
   // const instancedRigid
+  
   useEffect(() => {
     generateWorker.onmessage = (msg => {
       // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -64,17 +69,26 @@ export const Terrain = memo(() => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  return mesh
-  // return (
-  //   <RigidBody type="fixed">
-  //     <mesh position={[0, 0 ,0]}>
-  //       <boxGeometry></boxGeometry>
-  //       <meshStandardMaterial
-  //                 color={'gray'}
-  //                 // opacity={textureName === 'glassTexture' ? 0.7 : 1}
-  //                 transparent={true}
-  //             />
-  //     </mesh>
-  //   </RigidBody>
-  // )
+  // return mesh
+  return (
+    // <RigidBody type="fixed">
+    <>
+      <mesh position={[0, 0 ,0]}>
+        <boxGeometry></boxGeometry>
+        <meshStandardMaterial
+                  color={'gray'}
+                  // opacity={textureName === 'glassTexture' ? 0.7 : 1}
+                  transparent={true}
+              />
+      </mesh>
+      <mesh position={[1, 1 ,0]}>
+        <boxGeometry></boxGeometry>
+        <meshStandardMaterial
+                  color={'gray'}
+                  // opacity={textureName === 'glassTexture' ? 0.7 : 1}
+                  transparent={true}
+              />
+      </mesh>
+    </>
+  )
 })

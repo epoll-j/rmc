@@ -3,6 +3,7 @@ lockfileVersion: 5.3
 specifiers:
   '@react-three/drei': ^9.70.0
   '@react-three/fiber': ^8.13.0
+  '@react-three/rapier': ^1.1.1
   '@types/react': ^18.0.28
   '@types/react-dom': ^18.0.11
   '@types/three': ^0.152.1
@@ -22,6 +23,7 @@ specifiers:
 dependencies:
   '@react-three/drei': registry.npmmirror.com/@react-three/drei/9.70.0_8210d408bd99f5d712fb3b70af677ba0
   '@react-three/fiber': registry.npmmirror.com/@react-three/fiber/8.13.0_fa9bda8837fc89b343fce3c705981f38
+  '@react-three/rapier': registry.npmmirror.com/@react-three/rapier/1.1.1_9ce106fa16863650d3aa8ee8fa0c64b5
   react: registry.npmmirror.com/react/18.2.0
   react-dom: registry.npmmirror.com/react-dom/18.2.0_react@18.2.0
   three: registry.npmmirror.com/three/0.152.2
@@ -80,6 +82,12 @@ packages:
     resolution: {integrity: sha512-hBzuU5+JjB2cqNZyszkDHZgOSrUUT8V3dhgRl8Q9Gp6dAj/H5+KILGjbhDpc3Iy9qmqlm/akuOI2ut9VUtzJxQ==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@chevrotain/utils/-/utils-10.5.0.tgz}
     name: '@chevrotain/utils'
     version: 10.5.0
+    dev: false
+
+  registry.npmmirror.com/@dimforge/rapier3d-compat/0.11.2:
+    resolution: {integrity: sha512-vdWmlkpS3G8nGAzLuK7GYTpNdrkn/0NKCe0l1Jqxc7ZZOB3N0q9uG/Ap9l9bothWuAvxscIt0U97GVLr0lXWLg==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@dimforge/rapier3d-compat/-/rapier3d-compat-0.11.2.tgz}
+    name: '@dimforge/rapier3d-compat'
+    version: 0.11.2
     dev: false
 
   registry.npmmirror.com/@esbuild/android-arm/0.17.19:
@@ -573,6 +581,24 @@ packages:
       suspend-react: registry.npmmirror.com/suspend-react/0.0.8_react@18.2.0
       three: registry.npmmirror.com/three/0.152.2
       zustand: registry.npmmirror.com/zustand/3.7.2_react@18.2.0
+    dev: false
+
+  registry.npmmirror.com/@react-three/rapier/1.1.1_9ce106fa16863650d3aa8ee8fa0c64b5:
+    resolution: {integrity: sha512-DlMHJRIErr9753C4CO3V06rgrP4b5/LyDnwzeNOCPrWgasILbkjYIe37RcQ+MZN2n6YpmQNSFD3WpnU9XD/QxA==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@react-three/rapier/-/rapier-1.1.1.tgz}
+    id: registry.npmmirror.com/@react-three/rapier/1.1.1
+    name: '@react-three/rapier'
+    version: 1.1.1
+    peerDependencies:
+      '@react-three/fiber': '>=8.9.0'
+      react: '>=18.0.0'
+      three: '>=0.139.0'
+    dependencies:
+      '@dimforge/rapier3d-compat': registry.npmmirror.com/@dimforge/rapier3d-compat/0.11.2
+      '@react-three/fiber': registry.npmmirror.com/@react-three/fiber/8.13.0_fa9bda8837fc89b343fce3c705981f38
+      react: registry.npmmirror.com/react/18.2.0
+      three: registry.npmmirror.com/three/0.152.2
+      three-stdlib: registry.npmmirror.com/three-stdlib/2.23.9_three@0.152.2
+      use-asset: registry.npmmirror.com/use-asset/1.0.4_react@18.2.0
     dev: false
 
   registry.npmmirror.com/@swc/core-darwin-arm64/1.3.61:
@@ -1405,7 +1431,6 @@ packages:
     resolution: {integrity: sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/fast-deep-equal/-/fast-deep-equal-3.1.3.tgz}
     name: fast-deep-equal
     version: 3.1.3
-    dev: true
 
   registry.npmmirror.com/fast-glob/3.2.12:
     resolution: {integrity: sha512-DVj4CQIYYow0BlaelwK1pHl5n5cRSJfM60UA0zK891sVInoPri2Ekj7+e1CT3/3qxXenpI+nBBmQAcJPJgaj4w==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/fast-glob/-/fast-glob-3.2.12.tgz}
@@ -2289,6 +2314,28 @@ packages:
       zstddec: registry.npmmirror.com/zstddec/0.0.2
     dev: false
 
+  registry.npmmirror.com/three-stdlib/2.23.9_three@0.152.2:
+    resolution: {integrity: sha512-fYBClVGQptD7UZcoRZGNlR3sKcUW37hVPoEW1v68E4XuiwD0Ml/VqDUJ0yEMVE2DlooDvqgqv/rIcHC/B4N5pg==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/three-stdlib/-/three-stdlib-2.23.9.tgz}
+    id: registry.npmmirror.com/three-stdlib/2.23.9
+    name: three-stdlib
+    version: 2.23.9
+    peerDependencies:
+      three: '>=0.128.0'
+    dependencies:
+      '@types/draco3d': registry.npmmirror.com/@types/draco3d/1.4.2
+      '@types/offscreencanvas': registry.npmmirror.com/@types/offscreencanvas/2019.7.0
+      '@types/webxr': registry.npmmirror.com/@types/webxr/0.5.2
+      chevrotain: registry.npmmirror.com/chevrotain/10.5.0
+      draco3d: registry.npmmirror.com/draco3d/1.5.6
+      fflate: registry.npmmirror.com/fflate/0.6.10
+      ktx-parse: registry.npmmirror.com/ktx-parse/0.4.5
+      mmd-parser: registry.npmmirror.com/mmd-parser/1.0.4
+      opentype.js: registry.npmmirror.com/opentype.js/1.3.4
+      potpack: registry.npmmirror.com/potpack/1.0.2
+      three: registry.npmmirror.com/three/0.152.2
+      zstddec: registry.npmmirror.com/zstddec/0.0.2
+    dev: false
+
   registry.npmmirror.com/three/0.152.2:
     resolution: {integrity: sha512-Ff9zIpSfkkqcBcpdiFo2f35vA9ZucO+N8TNacJOqaEE6DrB0eufItVMib8bK8Pcju/ZNT6a7blE1GhTpkdsILw==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/three/-/three-0.152.2.tgz}
     name: three
@@ -2392,6 +2439,18 @@ packages:
     dependencies:
       punycode: registry.npmmirror.com/punycode/2.3.0
     dev: true
+
+  registry.npmmirror.com/use-asset/1.0.4_react@18.2.0:
+    resolution: {integrity: sha512-7/hqDrWa0iMnCoET9W1T07EmD4Eg/Wmoj/X8TGBc++ECRK4m5yTsjP4O6s0yagbxfqIOuUkIxe2/sA+VR2GxZA==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/use-asset/-/use-asset-1.0.4.tgz}
+    id: registry.npmmirror.com/use-asset/1.0.4
+    name: use-asset
+    version: 1.0.4
+    peerDependencies:
+      react: '>=17.0'
+    dependencies:
+      fast-deep-equal: registry.npmmirror.com/fast-deep-equal/3.1.3
+      react: registry.npmmirror.com/react/18.2.0
+    dev: false
 
   registry.npmmirror.com/use-sync-external-store/1.2.0_react@18.2.0:
     resolution: {integrity: sha512-eEgnFxGQ1Ife9bzYs6VLi8/4X6CObHMw9Qr9tPY43iKwsPw8xE8+EFsf/2cFZ5S3esXgpWgtSCtLNS41F+sKPA==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/use-sync-external-store/-/use-sync-external-store-1.2.0.tgz}
