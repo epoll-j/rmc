@@ -1,3 +1,6 @@
+import { useRef } from "react";
+import { useEffect } from "react";
+import { useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
 
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
@@ -11,36 +14,52 @@ import {
 
 export function useCameraHelper() {
   const { gl, scene, camera } = useThree();
-  const helperCamera = new OrthographicCamera(-1, 1, 1, -1, 5, 50);
-  const helper = new CameraHelper(camera);
+  const helperCamera = useMemo(
+    () => new OrthographicCamera(-1, 1, 1, -1, 3, 50),
+    []
+  );
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const helper = useMemo(() => new CameraHelper(camera), []);
+  const div1Ref = useRef<HTMLDivElement>();
+  const div2Ref = useRef<HTMLDivElement>();
   scene.add(helper);
-  const [div1, div2] = appendDom(gl.domElement.parentElement);
-
-  const controls = new OrbitControls(helperCamera, div1);
-  controls.target.set(0, 5, 0);
-  controls.update();
+  useEffect(() => {
+    const [div1, div2] = appendDom(gl.domElement.parentElement);
+    div1Ref.current = div1;
+    div2Ref.current = div2;
+    const controls = new OrbitControls(helperCamera, div1);
+    controls.target.set(0, 5, 0);
+    controls.update();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useFrame(() => {
     gl.setScissorTest(true);
-    {
-      const aspect = setScissorForElement(gl, div1);
-      helperCamera.left = -aspect;
-      helperCamera.right = aspect;
-      helperCamera.updateProjectionMatrix();
-      helper.visible = false;
-      helper.update();
+    if (div1Ref.current && div2Ref.current) {
+      {
+        const aspect = setScissorForElement(gl, div1Ref.current);
+        helperCamera.left = -aspect;
+        helperCamera.right = aspect;
+        helperCamera.updateProjectionMatrix();
+        helper.visible = true;
+        helper.update();
 
-      gl.render(scene, helperCamera);
-    }
-
-    {
-      const aspect = setScissorForElement(gl, div2);
-      if (camera instanceof PerspectiveCamera) {
-        camera.aspect = aspect;
+        gl.render(scene, helperCamera);
       }
-      camera.updateProjectionMatrix();
-      helper.visible = true;
-      gl.render(scene, camera);
+
+      {
+        const aspect = setScissorForElement(gl, div2Ref.c);
+        if (camera instanceof PerspectiveCamera) {
+          camera.aspect = aspect;
+        } else {
+          helperCamera.left = -aspect;
+          helperCamera.right = aspect;
+        }
+        camera.updateProjectionMatrix();
+        helper.visible = false;
+        helper.update();
+        gl.render(scene, camera);
+      }
     }
   });
 }
@@ -61,7 +80,7 @@ function appendDom(root: HTMLElement | null) {
 }
 
 function setScissorForElement(render: WebGLRenderer, elem: HTMLDivElement) {
-  const canvasRect = render.domElement.getBoundingClientRect(); //包围盒的正方体
+  const canvasRect = render.domElement.getBoundingClientRect();
   const elemRect = elem.getBoundingClientRect();
 
   // compute a canvas relative rectangle
