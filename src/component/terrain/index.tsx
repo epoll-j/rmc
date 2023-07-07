@@ -71,13 +71,11 @@ export const Terrain = memo(() => {
 
   // return mesh
   return (
-    // <RigidBody type="fixed">
     <>
       <mesh position={[0, 0 ,0]}>
         <boxGeometry></boxGeometry>
         <meshStandardMaterial
                   color={'gray'}
-                  // opacity={textureName === 'glassTexture' ? 0.7 : 1}
                   transparent={true}
               />
       </mesh>
@@ -85,7 +83,6 @@ export const Terrain = memo(() => {
         <boxGeometry></boxGeometry>
         <meshStandardMaterial
                   color={'gray'}
-                  // opacity={textureName === 'glassTexture' ? 0.7 : 1}
                   transparent={true}
               />
       </mesh>

@@ -1,14 +1,16 @@
 import { useRef, useEffect, useMemo } from 'react'
 import { Capsule } from 'three/examples/jsm/math/Capsule.js'
-import { Camera, Mesh, Vector3 } from 'three'
+import { Camera, CapsuleGeometry, Mesh, Vector3 } from 'three'
 import { useFrame, useThree } from '@react-three/fiber'
 import { Octree } from 'three/examples/jsm/math/Octree'
 import useKeyboard from './useKeyboard'
+import { useCameraHelper } from '@/hooks/useCameraHelper'
 
 const GRAVITY = 30
 const STEPS_PER_FRAME = 5
 
 export default function Player() {
+  useCameraHelper()
   const playerOnFloor = useRef(false)
   const ref = useRef<Mesh>(null)
   const playerVelocity = useMemo(() => new Vector3(), [])
@@ -71,6 +73,7 @@ export default function Player() {
     capsule.translate(deltaPosition)
     playerOnFloor = playerCollisions(capsule, octree, playerVelocity)
     camera.position.copy(capsule.end)
+    // ref.current?.position.copy(capsule.end)
     return playerOnFloor
   }
 
@@ -90,8 +93,8 @@ export default function Player() {
   function teleportPlayerIfOob(camera: Camera, capsule: Capsule, playerVelocity: Vector3) {
     if (camera.position.y <= -100) {
       playerVelocity.set(0, 0, 0)
-      capsule.start.set(0, 10, 0)
-      capsule.end.set(0, 11, 0)
+      capsule.start.set(0, 100, 0)
+      capsule.end.set(0, 101, 0)
       camera.position.copy(capsule.end)
       camera.rotation.set(0, 0, 0)
     }
@@ -105,16 +108,13 @@ export default function Player() {
       playerOnFloor.current = updatePlayer(camera, deltaSteps, octree, capsule, playerVelocity, playerOnFloor.current)
     }
     teleportPlayerIfOob(camera, capsule, playerVelocity)
-    ref.current?.position.copy(camera.position)
-    console.log(camera.position, 'c')
-    console.log(ref.current?.position, 'm')
   })
 
 
   return (
     <>
       <mesh position={[0, 100, 0]} ref={ref}>
-        <boxGeometry></boxGeometry>
+        <capsuleGeometry args={[0.35, 0.7, 4, 8]}></capsuleGeometry>
       </mesh>
     </>
   )

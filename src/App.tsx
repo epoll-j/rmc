@@ -19,15 +19,15 @@ function App() {
     //     { name: "shift", keys: ["Shift"] }
     //   ]}>
       <Canvas camera={{
-        fov: 50, near: 0.01, far: 500, position: [0, 100, 0]
+        fov: 50, near: 0.01, far: 500
       }}>
         <Sky />
         <ambientLight intensity={0.3} />
         <Suspense>
-          <Physics debug>
+          {/* <Physics debug> */}
             <Player></Player>
             <Terrain></Terrain>
-          </Physics>
+          {/* </Physics> */}
         </Suspense>
         <PointerLockControls></PointerLockControls>
       </Canvas>
