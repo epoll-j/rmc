@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useEffect } from "react";
 import { useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
@@ -14,23 +14,23 @@ import {
 
 export function useCameraHelper() {
   const { gl, scene, camera } = useThree();
-  const helperCamera = useMemo(
-    () => new OrthographicCamera(-1, 1, 1, -1, 3, 50),
-    []
-  );
+  const helperCamera = useMemo(() => new OrthographicCamera(-1, 1, 1, -1, 3, 50), []);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const helper = useMemo(() => new CameraHelper(camera), []);
   const div1Ref = useRef<HTMLDivElement>();
   const div2Ref = useRef<HTMLDivElement>();
+  // const controls = useMemo(() => new OrbitControls(helperCamera), [])
+  const [controls, setControls] = useState<OrbitControls>()
   scene.add(helper);
   useEffect(() => {
     const [div1, div2] = appendDom(gl.domElement.parentElement);
     div1Ref.current = div1;
     div2Ref.current = div2;
-    const controls = new OrbitControls(helperCamera, div1);
-    controls.target.set(0, 5, 0);
-    controls.update();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    const orbitControls = new OrbitControls(helperCamera, div1)
+    setControls(orbitControls)
+    orbitControls.target.set(0, 5, 0);
+    orbitControls.update();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useFrame(() => {
@@ -48,7 +48,7 @@ export function useCameraHelper() {
       }
 
       {
-        const aspect = setScissorForElement(gl, div2Ref.c);
+        const aspect = setScissorForElement(gl, div2Ref.current);
         if (camera instanceof PerspectiveCamera) {
           camera.aspect = aspect;
         } else {
@@ -62,6 +62,8 @@ export function useCameraHelper() {
       }
     }
   });
+
+  return [helperCamera, controls]
 }
 
 function appendDom(root: HTMLElement | null) {
