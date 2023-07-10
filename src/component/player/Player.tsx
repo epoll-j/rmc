@@ -73,26 +73,17 @@ export default function Player() {
     }
     playerVelocity.addScaledVector(playerVelocity, damping)
     const deltaPosition = playerVelocity.clone().multiplyScalar(delta)
-    const result = octree.capsuleIntersect(capsule)
-    // if (result) {
-    //   if (result.normal.x != 0) {
-    //     deltaPosition.setX(0)
-    //   }
-    //   if (result.normal.z != 0) {
-    //     deltaPosition.setZ(0)
-    //   }
-    // }
     capsule.translate(deltaPosition)
-
-    playerOnFloor = playerCollisions(capsule, result, playerVelocity)
+    playerOnFloor = playerCollisions(capsule, octree, playerVelocity)
     camera.position.copy(capsule.end)
- 
+    // ref.current?.position.copy(capsule.end)
     return playerOnFloor
   }
 
-  function playerCollisions(capsule: Capsule, result: any, playerVelocity: Vector3) {
-    // const result = octree.capsuleIntersect(capsule)
+  function playerCollisions(capsule: Capsule, octree: Octree, playerVelocity: Vector3) {
+    const result = octree.capsuleIntersect(capsule)
     let playerOnFloor = false
+    // console.log(capsule.start)
     if (result) {
       // console.log(result.normal, result.depth)
       playerOnFloor = result.normal.y > 0
@@ -101,7 +92,6 @@ export default function Player() {
       }
       // if (result.normal.x == 0 && result.normal.z == 0) {
       capsule.translate(result.normal.multiplyScalar(result.depth))
-      // capsule.translate
       
       // } else {
       //   if (result.normal.x != 0) {
@@ -125,11 +115,10 @@ export default function Player() {
     }
   }
 
-  useFrame(({ camera, scene }, delta) => {
+  useFrame(({ camera }, delta) => {
     controls(camera, delta, playerVelocity, playerOnFloor.current, playerDirection)
     const deltaSteps = Math.min(0.05, delta) / STEPS_PER_FRAME
     const octree = collideControls.buildOctree(camera.position)
-    // const octree = new Octree().fromGraphNode(scene)
     for (let i = 0; i < STEPS_PER_FRAME; i++) {
       playerOnFloor.current = updatePlayer(camera, deltaSteps, octree, capsule, playerVelocity, playerOnFloor.current)
     }
