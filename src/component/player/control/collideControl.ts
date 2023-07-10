@@ -3,12 +3,15 @@ import { RapierRigidBody } from "@react-three/rapier";
 import * as THREE from "three";
 import {
   BoxGeometry,
+  Group,
   InstancedMesh,
   Matrix4,
+  Mesh,
   MeshBasicMaterial,
   Raycaster,
   Vector3,
 } from "three";
+import { Octree } from "three/examples/jsm/math/Octree";
 
 export enum CollideSide {
   front,
@@ -179,5 +182,58 @@ export class CollideControl {
         //   break;
       }
     }
+  }
+
+  buildOctree(position: Vector3) {
+    const group = new Group();
+    const x = Math.round(position.x);
+    const z = Math.round(position.z);
+    const y =
+      Math.floor(
+        this.#noise.get(
+          x / this.#noise.gap,
+          z / this.#noise.gap,
+          this.#noise.seed
+        ) * this.#noise.amp
+      ) + 30;
+
+    const geometry = new BoxGeometry();
+    const material = new MeshBasicMaterial();
+    for (let i = 0; i < 9; i++) {
+      const mesh = new Mesh(geometry, material);
+      switch (i) {
+        case 0:
+          mesh.position.set(x, y, z);
+          break;
+        case 1:
+          mesh.position.set(x + 1, y, z);
+          break;
+        case 2:
+          mesh.position.set(x - 1, y, z);
+          break;
+        case 3:
+          mesh.position.set(x, y, z + 1);
+          break;
+        case 4:
+          mesh.position.set(x, y, z - 1);
+          break;
+        case 5:
+          mesh.position.set(x + 1, y, z + 1);
+          break;
+        case 6:
+          mesh.position.set(x - 1, y, z + 1);
+          break;
+        case 7:
+          mesh.position.set(x + 1, y, z - 1);
+          break;
+        case 8:
+          mesh.position.set(x - 1, y, z - 1);
+          break;
+      }
+
+      group.add(mesh);
+    }
+
+    return new Octree().fromGraphNode(group);
   }
 }

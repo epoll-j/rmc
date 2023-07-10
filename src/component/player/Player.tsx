@@ -1,16 +1,19 @@
 import { useRef, useEffect, useMemo } from 'react'
 import { Capsule } from 'three/examples/jsm/math/Capsule.js'
-import { Camera, CapsuleGeometry, Mesh, Vector3 } from 'three'
+import { BoxGeometry, Camera, CapsuleGeometry, Mesh, MeshBasicMaterial, Vector3 } from 'three'
 import { useFrame, useThree } from '@react-three/fiber'
 import { Octree } from 'three/examples/jsm/math/Octree'
 import useKeyboard from './useKeyboard'
 import { useCameraHelper } from '@/hooks/useCameraHelper'
+import { CollideControl } from './control/CollideControl'
 
 const GRAVITY = 30
 const STEPS_PER_FRAME = 5
 
+const collideControls = new CollideControl()
+
 export default function Player() {
-  useCameraHelper()
+  // const [helperCamera, controls1] = useCameraHelper()
   const playerOnFloor = useRef(false)
   const ref = useRef<Mesh>(null)
   const playerVelocity = useMemo(() => new Vector3(), [])
@@ -70,22 +73,44 @@ export default function Player() {
     }
     playerVelocity.addScaledVector(playerVelocity, damping)
     const deltaPosition = playerVelocity.clone().multiplyScalar(delta)
+    const result = octree.capsuleIntersect(capsule)
+    // if (result) {
+    //   if (result.normal.x != 0) {
+    //     deltaPosition.setX(0)
+    //   }
+    //   if (result.normal.z != 0) {
+    //     deltaPosition.setZ(0)
+    //   }
+    // }
     capsule.translate(deltaPosition)
-    playerOnFloor = playerCollisions(capsule, octree, playerVelocity)
+
+    playerOnFloor = playerCollisions(capsule, result, playerVelocity)
     camera.position.copy(capsule.end)
-    // ref.current?.position.copy(capsule.end)
+ 
     return playerOnFloor
   }
 
-  function playerCollisions(capsule: Capsule, octree: Octree, playerVelocity: Vector3) {
-    const result = octree.capsuleIntersect(capsule)
+  function playerCollisions(capsule: Capsule, result: any, playerVelocity: Vector3) {
+    // const result = octree.capsuleIntersect(capsule)
     let playerOnFloor = false
     if (result) {
+      // console.log(result.normal, result.depth)
       playerOnFloor = result.normal.y > 0
       if (!playerOnFloor) {
         playerVelocity.addScaledVector(result.normal, -result.normal.dot(playerVelocity))
       }
+      // if (result.normal.x == 0 && result.normal.z == 0) {
       capsule.translate(result.normal.multiplyScalar(result.depth))
+      // capsule.translate
+      
+      // } else {
+      //   if (result.normal.x != 0) {
+      //     playerDirection.setX(0)
+      //   }
+      //   if (result.normal.z != 0) {
+      //     playerDirection.setZ(0)
+      //   }
+      // }
     }
     return playerOnFloor
   }
@@ -103,7 +128,8 @@ export default function Player() {
   useFrame(({ camera, scene }, delta) => {
     controls(camera, delta, playerVelocity, playerOnFloor.current, playerDirection)
     const deltaSteps = Math.min(0.05, delta) / STEPS_PER_FRAME
-    const octree = new Octree().fromGraphNode(scene)
+    const octree = collideControls.buildOctree(camera.position)
+    // const octree = new Octree().fromGraphNode(scene)
     for (let i = 0; i < STEPS_PER_FRAME; i++) {
       playerOnFloor.current = updatePlayer(camera, deltaSteps, octree, capsule, playerVelocity, playerOnFloor.current)
     }
