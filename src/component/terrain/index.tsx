@@ -69,23 +69,23 @@ export const Terrain = memo(() => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // return mesh
-  return (
-    <>
-      <mesh position={[0, 0 ,0]}>
-        <boxGeometry></boxGeometry>
-        <meshStandardMaterial
-                  color={'gray'}
-                  transparent={true}
-              />
-      </mesh>
-      <mesh position={[1, 1 ,0]}>
-        <boxGeometry></boxGeometry>
-        <meshStandardMaterial
-                  color={'gray'}
-                  transparent={true}
-              />
-      </mesh>
-    </>
-  )
+  return mesh
+  // return (
+  //   <>
+  //     <mesh position={[0, 0 ,0]}>
+  //       <boxGeometry></boxGeometry>
+  //       <meshStandardMaterial
+  //                 color={'gray'}
+  //                 transparent={true}
+  //             />
+  //     </mesh>
+  //     <mesh position={[1, 1 ,0]}>
+  //       <boxGeometry></boxGeometry>
+  //       <meshStandardMaterial
+  //                 color={'gray'}
+  //                 transparent={true}
+  //             />
+  //     </mesh>
+  //   </>
+  // )
 })
